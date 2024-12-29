@@ -15,9 +15,12 @@ Telegram Bot
 package main
 
 import (
+	"context"
+	"main/bot"
 	"main/logger"
 	"main/writer"
-	"time"
+	"os"
+	"os/signal"
 )
 
 var log = logger.Logger
@@ -27,10 +30,34 @@ func main() {
 	// If data is present, Then compare it with current time, if the data is old then push into github and trigger build
 
 	log.Info("Starting the writer")
-	writer := writer.Writer{}
 	writer.StartCronJob()
 
 	// Wait for the Cron job to run
-	time.Sleep(5 * time.Minute)
+	// time.Sleep(5 * time.Minute)
+
+	// Start the telegram bot
+	log.Info("Starting the telegram bot")
+	// create a context
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
+	// Create a channel to fetch the data from the bot
+	dataChannel := make(chan bot.MessageData)
+
+	go func() {
+		for dataChannel != nil {
+			select {
+			case data := <-dataChannel:
+				log.Info("Writing data into the database")
+				writer.InsertDataIntoDB(data.Message, data.Asset)
+				// writer.WriteData(data)
+			case <-ctx.Done():
+				log.Info("Exiting the bot")
+				return
+			}
+		}
+	}()
+
+	bot.StartTelegramBot(ctx, dataChannel)
 
 }

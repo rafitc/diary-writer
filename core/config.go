@@ -9,11 +9,17 @@ import (
 // Define all your config in config.yml and add the model here
 // Configurations exported
 type Configurations struct {
-	BOT bot
+	BOT      bot
+	DATABASE DB
 }
 
 type bot struct {
 	TOKEN string
+}
+
+type DB struct {
+	NAME string
+	URL  string
 }
 
 // Export the Sugar logger so it can be accessed in other files.
