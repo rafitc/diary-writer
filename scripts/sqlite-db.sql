@@ -8,6 +8,9 @@ CREATE TABLE daily_updates (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     content TEXT NOT NULL,
     asset TEXT,
+    asset_extension TEXT,
+    asset_download_link TEXT,
+    asset_blob BLOB,
     creation_date DATE DEFAULT CURRENT_DATE,
     is_updated BOOLEAN DEFAULT 0
 );

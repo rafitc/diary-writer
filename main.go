@@ -49,7 +49,7 @@ func main() {
 			select {
 			case data := <-dataChannel:
 				log.Info("Writing data into the database")
-				writer.InsertDataIntoDB(data.Message, data.Asset)
+				writer.InsertDataIntoDB(data.Message, data.Asset, data.Asset_extension, data.Asset_download_link, data.Date)
 				// writer.WriteData(data)
 			case <-ctx.Done():
 				log.Info("Exiting the bot")
