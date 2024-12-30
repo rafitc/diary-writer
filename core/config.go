@@ -11,6 +11,7 @@ import (
 type Configurations struct {
 	BOT      bot
 	DATABASE DB
+	PUBLISH  Publish
 }
 
 type bot struct {
@@ -22,7 +23,14 @@ type DB struct {
 	URL  string
 }
 
-// Export the Sugar logger so it can be accessed in other files.
+type Publish struct {
+	GITHUB_USERNAME   string
+	GITHUB_AUTH_TOKEN string
+	GITHUB_REPO       string
+	GITHUB_BRANCH     string
+	CLONE_DIRECTORY   string
+}
+
 var Config *Configurations
 
 func init() {
