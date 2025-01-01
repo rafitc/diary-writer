@@ -106,7 +106,7 @@ func dailyDiaryDataChecker() {
 	// If data is present, Then compare it with current time, if the data is old then push into github and trigger build
 	// get all data from db with is_updated false
 	query := `SELECT id, content, asset, asset_extension, creation_date, asset_blob FROM daily_updates 
-			WHERE is_updated = false
+			WHERE is_updated = false AND creation_date < DATE('now', 'localtime')
 			order by id` // get all data from db with is_updated false
 	rows, err := db.Fetch(query)
 	if err != nil {
