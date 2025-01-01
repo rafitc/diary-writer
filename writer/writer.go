@@ -21,17 +21,18 @@ import (
 var log = logger.Logger
 
 func StartCronJob() {
-	log.Infof("starting %v job")
+	log.Debug("Scheduling Cron Job")
 	// Starting a cronJob to check is there anything in db
 	c := cron.New()
-	c.AddFunc(core.Config.PUBLISH.PUBLISH_JOB_CRON, func() { dailyDiaryDataChecker() })
-	log.Infof("Started %s cronJob")
+	c.AddFunc(core.Config.PUBLISH.PUBLISH_JOB_CRON, func() {
+		dailyDiaryDataChecker()
+	})
+	log.Info("Configured cron job to check for data in db")
 	c.Start()
-
 }
 
 func InsertDataIntoDB(content string, asset string, extension string, download_link string, creation_date time.Time) {
-	log.Debugf("Inserting data into db")
+	log.Debug("Inserting data into db")
 
 	db, err := db.NewDatabase(core.Config.DATABASE.NAME)
 	if err != nil {
@@ -91,11 +92,11 @@ func InsertDataIntoDB(content string, asset string, extension string, download_l
 		}
 	}
 
-	log.Debugf("Data inserted into db")
+	log.Info("Data inserted into sqlite-db")
 }
 
 func dailyDiaryDataChecker() {
-	log.Debugf("Starting daily diary")
+	log.Info("Starting daily diary data checker")
 	// Check for data in db
 	db, err := db.NewDatabase(core.Config.DATABASE.NAME)
 	if err != nil {
@@ -104,7 +105,7 @@ func dailyDiaryDataChecker() {
 	}
 	defer db.Close()
 	// If data is present, Then compare it with current time, if the data is old then push into github and trigger build
-	// get all data from db with is_updated false
+	// get all previous days data from db where is_updated false
 	query := `SELECT id, content, asset, asset_extension, creation_date, asset_blob FROM daily_updates 
 			WHERE is_updated = false AND creation_date < DATE('now', 'localtime')
 			order by id` // get all data from db with is_updated false
@@ -164,14 +165,13 @@ func dailyDiaryDataChecker() {
 
 	// If data is not present, then do nothing
 	if len(entries) == 0 {
-		log.Debugf("No data in db")
+		log.Debug("No data in db")
 		return
 	} else {
-		log.Debugf("Data present in db")
+		log.Debug("Data present in db")
 		for _, entry := range entries {
-			log.Debugf("Content:\n %s", entry.Content)
 
-			// the expecting content is fully qualified mdx format TODO
+			// the expecting content is fully qualified mdx format
 			finalContent, titleForJsonLog, summaryForJsonLog := editor.EditContent(entry.Content, entry.Date)
 
 			// Call the publisher to push the data into github
@@ -204,6 +204,6 @@ func dailyDiaryDataChecker() {
 
 	// If data is present and not old, then do nothing
 	// If data is present and old, then push into github and trigger build
-	log.Debugf("Completed daily diary data checker")
+	log.Debug("Completed daily diary data checker")
 
 }
