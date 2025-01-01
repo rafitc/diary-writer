@@ -6,11 +6,13 @@ import (
 	"io/ioutil"
 	"main/core"
 	"main/db"
+	"main/editor"
 	"main/logger"
 	"main/models"
 	"main/publisher"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/robfig/cron"
@@ -22,7 +24,7 @@ func StartCronJob() {
 	log.Infof("starting %v job")
 	// Starting a cronJob to check is there anything in db
 	c := cron.New()
-	c.AddFunc("0/5 * * * * *", func() { dailyDiaryDataChecker() })
+	c.AddFunc(core.Config.PUBLISH.PUBLISH_JOB_CRON, func() { dailyDiaryDataChecker() })
 	log.Infof("Started %s cronJob")
 	c.Start()
 
@@ -103,7 +105,7 @@ func dailyDiaryDataChecker() {
 	defer db.Close()
 	// If data is present, Then compare it with current time, if the data is old then push into github and trigger build
 	// get all data from db with is_updated false
-	query := `SELECT id, content, asset, asset_extension, creation_date, is_updated FROM daily_updates 
+	query := `SELECT id, content, asset, asset_extension, creation_date, asset_blob FROM daily_updates 
 			WHERE is_updated = false
 			order by id` // get all data from db with is_updated false
 	rows, err := db.Fetch(query)
@@ -121,36 +123,41 @@ func dailyDiaryDataChecker() {
 		var asset string
 		var asset_extension string
 		var createdAt time.Time
-		var isUpdated bool
+		var fileblob []byte
 
-		err = rows.Scan(&id, &content, &asset, &asset_extension, &createdAt, &isUpdated)
+		err = rows.Scan(&id, &content, &asset, &asset_extension, &createdAt, &fileblob)
 		if err != nil {
 			log.Errorf("Error in scanning data from db %v", err)
 			return
 		}
 		date := createdAt.Format("2006-01-02")
 		if entry, exists := entries[date]; exists {
+			entry.Ids = append(entry.Ids, id)
 			entry.Content += "" + content + "\n"
 			if len(asset) > 0 {
 				entry.Content += fmt.Sprintf("\n![Alt Text](../images/%s/%s%s)\n\n", date, asset, asset_extension)
 				assetEntry := models.ASSET{
 					Asset:     asset,
 					Extension: asset_extension,
+					Blob:      fileblob,
 				}
 				entry.Asset = append(entry.Asset, assetEntry)
 			}
 		} else {
 			assetEntries := []models.ASSET{}
 			if len(asset) > 0 {
+				entry.Content += fmt.Sprintf("\n![Alt Text](../images/%s/%s%s)\n\n", date, asset, asset_extension)
 				assetEntries = append(assetEntries, models.ASSET{
 					Asset:     asset,
 					Extension: asset_extension,
+					Blob:      fileblob,
 				})
 			}
 			entries[date] = &models.DiaryEntry{
 				Content: content,
 				Date:    date,
 				Asset:   assetEntries,
+				Ids:     []int{id},
 			}
 		}
 	}
@@ -165,9 +172,33 @@ func dailyDiaryDataChecker() {
 			log.Debugf("Content:\n %s", entry.Content)
 
 			// the expecting content is fully qualified mdx format TODO
+			finalContent, titleForJsonLog, summaryForJsonLog := editor.EditContent(entry.Content, entry.Date)
 
 			// Call the publisher to push the data into github
-			publisher.PublishContent(entry.Content, entry.Date, entry.Asset)
+			status := publisher.PublishContent(finalContent, entry.Date, entry.Asset, titleForJsonLog, summaryForJsonLog)
+			if !status {
+				log.Errorf("Error in Publishing data to github")
+				return
+			}
+
+			// Update the db with is_updated true
+			// Later will add an script to delete the is_updated true data
+			// Build the query with placeholders
+			placeholders := make([]string, len(entry.Ids))
+			args := make([]interface{}, len(entry.Ids))
+
+			for i, id := range entry.Ids {
+				placeholders[i] = "?"
+				args[i] = id
+			}
+
+			query := fmt.Sprintf("UPDATE daily_updates SET is_updated = true WHERE id IN (%s)", strings.Join(placeholders, ","))
+
+			_, err = db.Update(query, args...)
+			if err != nil {
+				log.Errorf("Error in updating data in db %v", err)
+				return
+			}
 		}
 	}
 

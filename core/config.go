@@ -12,10 +12,16 @@ type Configurations struct {
 	BOT      bot
 	DATABASE DB
 	PUBLISH  Publish
+	GEN_AI   GEN_AI
 }
 
 type bot struct {
 	TOKEN string
+}
+
+type GEN_AI struct {
+	GROK_API_KEY string
+	MODEL_NAME   string
 }
 
 type DB struct {
@@ -24,11 +30,14 @@ type DB struct {
 }
 
 type Publish struct {
-	GITHUB_USERNAME   string
-	GITHUB_AUTH_TOKEN string
-	GITHUB_REPO       string
-	GITHUB_BRANCH     string
-	CLONE_DIRECTORY   string
+	PUBLISH_JOB_CRON    string
+	GITHUB_USERNAME     string
+	GITHUB_AUTH_TOKEN   string
+	GITHUB_REPO         string
+	GITHUB_BRANCH       string
+	CLONE_DIRECTORY     string
+	GITHUB_COMMIT_USER  string
+	GITHUB_COMMIT_EMAIL string
 }
 
 var Config *Configurations
