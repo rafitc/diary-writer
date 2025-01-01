@@ -90,7 +90,7 @@ func editContentUsingLLM(content string, date string, prompt string, typeOfConte
 
 	// Call the LLM model
 	apiURL := "https://api.groq.com/openai/v1/chat/completions"
-	apiKey := core.Config.GEN_AI.GROK_API_KEY
+	apiKey := core.Config.GEN_AI.GROQ_API_KEY
 
 	// content = "im very poor boy. \n my friend's is good"
 	requestBody, err := json.Marshal(map[string]interface{}{

@@ -87,8 +87,8 @@ func updateLogJSON(title string, summary string, date string, dailyLogIcon strin
 		Href: fmt.Sprintf("/diary/%s", date),
 	})
 
-	// read it from the source add it in the top
-	// write it back to the source
+	// Read it from the source add it in the top
+	// Write it back to the source
 	// Open the file
 	// Open the JSON file
 	file, err := os.Open(core.Config.PUBLISH.CLONE_DIRECTORY + "public/daily_updates.json")
@@ -115,14 +115,14 @@ func updateLogJSON(title string, summary string, date string, dailyLogIcon strin
 
 	// Add the new entry to the top
 	diaryEntries = append([]models.LogEntry{newEntry}, diaryEntries...)
-	//write it back to the source
+	// Write it back to the source
 	// Marshal the JSON data
 	newFileContent, err := json.MarshalIndent(diaryEntries, "", "    ")
 	if err != nil {
 		log.Fatalf("Failed to marshal JSON: %v", err)
 		return false
 	}
-	// writ it back to the source
+	// Writ it back to the source
 	err = os.WriteFile(core.Config.PUBLISH.CLONE_DIRECTORY+"public/daily_updates.json", newFileContent, 0644)
 	if err != nil {
 		log.Fatalf("Failed to write JSON: %v", err)
@@ -247,7 +247,7 @@ func writeMdxFile(content string, date string) bool {
 func cloneAndFetchTheLatestChanges() (*git.Repository, error) {
 
 	// Clone the given repository to the given directory
-	log.Info("git clone https://github.com/go-git/go-git")
+	log.Infof("git clone %s", core.Config.PUBLISH.GITHUB_REPO)
 
 	repo, err := git.PlainClone(core.Config.PUBLISH.CLONE_DIRECTORY, false, &git.CloneOptions{
 		URL:      core.Config.PUBLISH.GITHUB_REPO,

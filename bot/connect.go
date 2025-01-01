@@ -23,6 +23,8 @@ type MessageData struct {
 }
 
 func StartTelegramBot(ctx context.Context, ch chan MessageData) {
+
+	// create the handler with the channel
 	handlerWithChannel := createHandler(ch)
 
 	opts := []bot.Option{
