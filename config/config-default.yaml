@@ -1,0 +1,19 @@
+BOT:
+  TOKEN: <YOUR-TELEGRAM-BOT-TOKEN>
+
+DATABASE:
+  NAME: <SQLITE-DB-NAME>
+
+GEN_AI:
+  GROQ_API_KEY: <GROQ-API-KEY>
+  MODEL_NAME: llama-3.3-70b-versatile # you can give any model available in Groq API
+
+PUBLISH:
+  PUBLISH_JOB_CRON: 0 0 1 * * * # prefer this to set on daily once
+  GITHUB_USERNAME: <GITHUB-USERNAME>
+  GITHUB_AUTh_TOKEN: <GITHUB-AUTH-TOKEN>
+  GITHUB_REPO: <GITHUB-REPO-URL-OF-DIARY(front-end)>
+  GITHUB_BRANCH: main
+  CLONE_DIRECTORY: <directory-to-clone-repo> # any local path to clone the repo
+  GITHUB_COMMIT_USER: <GITHUB-USERNAME> # This is the user who is going to commit the changes (Bot user or same user)
+  GITHUB_COMMIT_EMAIL: <GITHUB-EMAIL> # This is the user email who is going to commit the changes (Bot user or same user)
