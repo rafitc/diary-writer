@@ -41,28 +41,33 @@ func generateTitleAndSummary(content string, date string) (string, string, strin
 
 func processContent(content string, date string) (string, string) {
 	lines := strings.Split(content, "\n")
-	var buffer bytes.Buffer
 	var finalContent bytes.Buffer
 	var contentForHeadline bytes.Buffer
 
 	prompt := "I am sending you content to fix the grammar. In response, don't change the content structure; just fix the grammar. Provide only the modified content as the response. Don't change the newline characters in the content."
-
+	buffer_string := ""
 	for _, line := range lines {
 		if strings.Contains(line, "![Alt Text]") {
 			// Send accumulated content to the API
-			respFromLLM := editContentUsingLLM(buffer.String(), date, prompt, "edit")
+			respFromLLM := editContentUsingLLM(buffer_string, date, prompt, "edit")
+			// now clear the buffer
+			buffer_string = ""
 			finalContent.WriteString(respFromLLM + "\n")
 			finalContent.WriteString(line + "\n")
 
 			contentForHeadline.WriteString(respFromLLM + "\n")
 			continue
 		}
-		buffer.WriteString(line + "\n")
+		if line != "" {
+			buffer_string += line + "\n"
+			continue
+		}
 	}
 
 	// Handle remaining content after the last image marker
-	if buffer.Len() > 0 {
-		respFromLLM := editContentUsingLLM(buffer.String(), date, prompt, "edit")
+	if buffer_string != "" {
+		respFromLLM := editContentUsingLLM(buffer_string, date, prompt, "edit")
+		buffer_string = ""
 		finalContent.WriteString(respFromLLM + "\n")
 
 		contentForHeadline.WriteString(respFromLLM + "\n")
