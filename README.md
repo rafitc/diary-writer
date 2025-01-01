@@ -1,40 +1,52 @@
 # Diary Writer
 
-Log your daily activities Quickly.
+Log your daily activities quickly and effortlessly.
 
-## Whay i built this
+## Why I Built This
 
-I've been looking for a way to write diary in quick way and publish it on daily. Couldn't find any perfect solution for me. I thought of making one based on my requirement
+I wanted a simple and efficient way to maintain a daily diary and publish entries effortlessly. After exploring various tools, I couldn’t find a solution that perfectly suited my needs. So, I decided to build one tailored to my requirements.
 
-## WorkFlow
+## Workflow
 
-Just text your daily activities to your telegram bot, it fetches all data together and at the end of the day it collect all the data for the day and push into the [Application](https://github.com/rafitc/diary). The Writer application modify the content to fix grammar errors, it generate title and summary as well using LLM (Groq AI)
+1. **Log Activities:** Send your daily activities as messages to a Telegram bot.
+2. **Data Collection:** The bot collects and organizes all your messages for the day.
+3. **Content Processing:** At the end of the day, the backend system processes the collected data to:
+   - Fix grammar errors.
+   - Generate a title and summary using a Large Language Model (LLM) powered by [Groq AI](https://groq.com).
+4. **Publishing:** The processed content is pushed to the [Diary Application](https://github.com/rafitc/diary) for publishing.
 
-Backend system for my [Diary](https://github.com/rafitc/diary)
+## Tech Stack
 
-## Tech stacks
-
-- Go lang
-- Telegram [Bot API](https://pkg.go.dev/github.com/go-telegram/bot)
-- Sqlite3 DB
-- [Groq AI](https://groq.com)
+- **Language:** Go
+- **Bot Integration:** Telegram [Bot API](https://pkg.go.dev/github.com/go-telegram/bot)
+- **Database:** SQLite3
+- **AI Assistance:** [Groq AI](https://groq.com)
+- **Publish the diary** [Go-Git](https://pkg.go.dev/github.com/go-git/go-git/v5)
 
 ## Deployment Guide
 
-1. Clone the repo
-2. Get API key from Groq AI
-3. Build the docker image
-4. Create config.yaml by filling your credentials
-5. Create Docker service
-   1. Mount sqlite3 db as volume
-   2. Create docker config using config/config.yaml
-6. Deploy application as service
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/rafitc/diary
+   ```
+2. **Obtain API Key:** Get an API key from [Groq AI](https://groq.com).
+3. **Build the Docker Image:**
+   ```bash
+   docker build -t diary-writer .
+   ```
+4. **Configure Application:**
+   - Create a `config.yaml` file with your credentials and settings.
+5. **Set Up Docker Service:**
+   - Mount the SQLite3 database as a volume.
+   - Use the `config/config.yaml` file to create a Docker config.
+6. **Deploy the Service:** Run the application as a Docker service.
 
----
+## Powered by
 
 <a href="https://groq.com" target="_blank" rel="noopener noreferrer">
-  <img
-    src="https://groq.com/wp-content/uploads/2024/03/PBG-mark1-color.svg"
-    alt="Powered by Groq for fast inference."
-  />
+    <img
+        src="https://groq.com/wp-content/uploads/2024/03/PBG-mark1-color.svg"
+        alt="Powered by Groq for fast inference."
+        width="100"
+    />
 </a>
