@@ -20,7 +20,7 @@ type bot struct {
 }
 
 type GEN_AI struct {
-	GROK_API_KEY string
+	GROQ_API_KEY string
 	MODEL_NAME   string
 }
 
