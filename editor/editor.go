@@ -31,7 +31,7 @@ func generateTitleAndSummary(content string, date string) (string, string, strin
 	prompt = "Please generate a concise and engaging title for the following content. The title should be brief, ideally one line, and should capture the essence of the content. Provide only the title in your response without any special characters."
 	title := editContentUsingLLM(content, date, prompt, "title")
 
-	prompt = "Please generate a concise and engaging summary for the following content. The title should be brief, ideally one line, and should capture the essence of the content. Provide only the summary in your response without any special characters."
+	prompt = "Please generate a concise and engaging summary for the following content. The summary should be brief, ideally less than or around 35 words, and should capture the essence of the content. Provide only the summary in your response without any special characters."
 	summary := editContentUsingLLM(content, date, prompt, "summary")
 
 	// Add the static part of the content on top of the content
@@ -52,8 +52,8 @@ func processContent(content string, date string) (string, string) {
 			respFromLLM := editContentUsingLLM(buffer_string, date, prompt, "edit")
 			// now clear the buffer
 			buffer_string = ""
-			finalContent.WriteString(respFromLLM + "\n")
-			finalContent.WriteString(line + "\n")
+			finalContent.WriteString(respFromLLM + "\n\n")
+			finalContent.WriteString(line + "\n\n")
 
 			contentForHeadline.WriteString(respFromLLM + "\n")
 			continue
@@ -68,7 +68,7 @@ func processContent(content string, date string) (string, string) {
 	if buffer_string != "" {
 		respFromLLM := editContentUsingLLM(buffer_string, date, prompt, "edit")
 		buffer_string = ""
-		finalContent.WriteString(respFromLLM + "\n")
+		finalContent.WriteString(respFromLLM + "\n\n")
 
 		contentForHeadline.WriteString(respFromLLM + "\n")
 	}
