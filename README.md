@@ -41,22 +41,27 @@ I wanted a simple and efficient way to maintain a daily diary and publish entrie
    - Install [sqlite3](https://www.sqlite.org/download.html) db in your system
    - Create a folder to create DB. Eg:- `mkdir -p /diary-writer/db`
    - Create DB and tables. Run [this Query](scripts/sqlite-db.sql)
-7. Create a config.yaml and update it with Git credentials, API keys, folder repo etc
-8. Create a docker config using config.yaml. Eg:- `docker config create diary-writer-config config.yaml`
-9. **Set Up Docker Service:**
-   - Mount the SQLite3 database as a volume.
-   - Use the `diary-writer-config` config to mount as a config
-10. **Deploy the Service:** Run the application as a Docker service.
+7. **Config setup**
+   - Create config.yaml file and update it with your Git credentials, API keys, folder path etc
+   - Create a docker config using config.yaml. Eg:- `docker config create diary-writer-config config.yaml`
+8. **Set Up Docker Service:**
+
+- Mount the SQLite3 database as a volume.
+- Use the `diary-writer-config` config to mount as a config
+
+9.  **Deploy the Service:** Run the application as a Docker service.
 
 - Docker service script
+  ```bash
+     docker service create \
+     --name my-diary-writer \
+     --mount type=bind,source=/diary-writer/db,target=/root/sqlite-db \
+     --config source=diary-writer-config,target=/root/config/config.yaml \
+     diary-writer:latest
+  ```
 
-```bash
-docker service create \
-   --name my-diary-writer \
-   --mount type=bind,source=/diary-writer/db,target=/root/sqlite-db \
-   --config source=diary-writer-config,target=/root/config/config.yaml \
-   diary-writer:latest
-```
+10. **Verify the deployment** You can verify and check the status using `docker logs -f <CONTAINER-ID>`
+
 
 ## Powered by
 
