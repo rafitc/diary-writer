@@ -45,23 +45,18 @@ I wanted a simple and efficient way to maintain a daily diary and publish entrie
    - Create config.yaml file and update it with your Git credentials, API keys, folder path etc
    - Create a docker config using config.yaml. Eg:- `docker config create diary-writer-config config.yaml`
 8. **Set Up Docker Service:**
-
-- Mount the SQLite3 database as a volume.
-- Use the `diary-writer-config` config to mount as a config
-
-9.  **Deploy the Service:** Run the application as a Docker service.
-
-- Docker service script
-  ```bash
-     docker service create \
-     --name my-diary-writer \
-     --mount type=bind,source=/diary-writer/db,target=/root/sqlite-db \
-     --config source=diary-writer-config,target=/root/config/config.yaml \
-     diary-writer:latest
-  ```
-
+   - Mount the SQLite3 database as a volume.
+   - Use the `diary-writer-config` config to mount as a config
+9. **Deploy the Service:** Run the application as a Docker service.
+   - Docker service script
+   ```bash
+      docker service create \
+      --name my-diary-writer \
+      --mount type=bind,source=/diary-writer/db,target=/root/sqlite-db \
+      --config source=diary-writer-config,target=/root/config/config.yaml \
+      diary-writer:latest
+   ```
 10. **Verify the deployment** You can verify and check the status using `docker logs -f <CONTAINER-ID>`
-
 
 ## Powered by
 
