@@ -1,6 +1,12 @@
 # Use the official Golang image as a build stage
 FROM golang:1.22.4-alpine AS builder
 
+# Install build dependencies
+RUN apk add --no-cache gcc musl-dev sqlite-dev
+
+# Set CGO_ENABLED to 1
+ENV CGO_ENABLED=1
+
 # Set the Current Working Directory inside the container
 WORKDIR /app
 
@@ -19,10 +25,13 @@ RUN go build -o main .
 # Start a new stage from scratch
 FROM alpine:latest  
 
+# Install runtime dependencies
+RUN apk add --no-cache sqlite-libs
+
 WORKDIR /root/
 
 # Create directories for git repo clone and sqlite3 db
-RUN mkdir -p /root/git-repo /root/sqlite-db
+RUN mkdir -p /root/git-repo /root/sqlite-db /root/diary-config/config
 
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/main .

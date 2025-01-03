@@ -3,7 +3,7 @@
 -- Create a new database (if you haven't already)
 sqlite3 diary.db
 
--- Create a table named 'my_table' with the specified structure
+-- Create a table named 'daily_updates' with the specified structure
 CREATE TABLE daily_updates (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     content TEXT NOT NULL,

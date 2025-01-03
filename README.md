@@ -30,16 +30,33 @@ I wanted a simple and efficient way to maintain a daily diary and publish entrie
    git clone https://github.com/rafitc/diary
    ```
 2. **Obtain API Key:** Get an API key from [Groq AI](https://groq.com).
-3. **Build the Docker Image:**
+3. **Obtain Telegram Token** Create your own telegram bot [using bot father](https://core.telegram.org/bots/features#creating-a-new-bot) and get the API key
+4. **Build the Docker Image:**
    ```bash
    docker build -t diary-writer .
    ```
-4. **Configure Application:**
+5. **Configure Application:**
    - Create a `config.yaml` file with your credentials and settings.
-5. **Set Up Docker Service:**
+6. **DB setup**
+   - Install [sqlite3](https://www.sqlite.org/download.html) db in your system
+   - Create a folder to create DB. Eg:- `mkdir -p /diary-writer/db`
+   - Create DB and tables. Run [this Query](scripts/sqlite-db.sql)
+7. Create a config.yaml and update it with Git credentials, API keys, folder repo etc
+8. Create a docker config using config.yaml. Eg:- `docker config create diary-writer-config config.yaml`
+9. **Set Up Docker Service:**
    - Mount the SQLite3 database as a volume.
-   - Use the `config/config.yaml` file to create a Docker config.
-6. **Deploy the Service:** Run the application as a Docker service.
+   - Use the `diary-writer-config` config to mount as a config
+10. **Deploy the Service:** Run the application as a Docker service.
+
+- Docker service script
+
+```bash
+docker service create \
+   --name my-diary-writer \
+   --mount type=bind,source=/diary-writer/db,target=/root/sqlite-db \
+   --config source=diary-writer-config,target=/root/config/config.yaml \
+   diary-writer:latest
+```
 
 ## Powered by
 
